@@ -29,7 +29,7 @@ Copy and paste them into the proper spots in the config.json file
 ## Bizhawk
 
 In order for the scripts to work you need to set up a Bizhawk emulator shortcut with the parameters for connected to the application.
-Make a shortcut for Bizhawk, right click it and select "properties", then paste this to the end of the target box:  --socket_ip=127.0.0.1 --socket_port=8081
+Make a shortcut for Bizhawk, right click it and select "properties", then paste this to the end of the target box: ` --socket_ip=127.0.0.1 --socket_port=8081`
 Whenever you want to use the StreamPlusBizhawk Client the emulator must be launched with this shortcut.
 
 ### Lua scripts
