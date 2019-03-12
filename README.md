@@ -43,3 +43,7 @@ and navigate to where you installed StreamPlusBizhawk Client and load the .lua s
 
 You may notice the Template.lua file, if you want to make a .lua file for a new game or want to make your own commands you can by modifing this file.
 
+## transactions.json
+
+If you setup prices in the configuration of the extension then everytime a purchase is made on your channel a copy of the transaction receit is saved to this file.
+
