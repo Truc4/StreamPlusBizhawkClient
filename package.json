@@ -8,5 +8,8 @@
   },
   "author": "Truc_e",
   "license": "ISC",
-  "bin": "app.js"
+  "bin": "app.js",
+  "dependencies": {
+    "socket.io-client": "^2.2.0"
+  }
 }
