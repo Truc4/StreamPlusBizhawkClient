@@ -11,7 +11,7 @@ memory.usememorydomain("RDRAM"); -- set this to "RDRAM" for N64 games
 -- This function fires once for every command received
 function main(commandId, username)
 	console.writeline("Button " .. commandId .. " pressed by " .. username);
-	if commandId == 1 then
+	if commandId == '1' then
 		-- If button 1 from extension is pressed
 		
 		-- Edit memory domain example
@@ -20,9 +20,9 @@ function main(commandId, username)
 		-- Display message to emulator
 		display(username .. " pressed button " .. commandId, 500);
 		
-	elseif commandId == 2 then
+	elseif commandId == '2' then
 		-- If button 2 is pressed
-	elseif commandId == 3 then
+	elseif commandId == '3' then
 		-- etc...
 	end
 end
@@ -114,6 +114,7 @@ while true do
 	
 	-- Display messages if any
 	if textTime > 0 then
+		textTime = textTime - 1;
 		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, text, nil, nil, (client.bufferwidth()*client.bufferheight())/50000, nil, nil, 'center', 'middle');
 	end
 
