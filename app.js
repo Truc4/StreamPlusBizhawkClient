@@ -66,7 +66,7 @@ const zServer = net.createServer(function (zSocket) {
 });
 
 zServer.listen(8081, '0.0.0.0', function(){
-    console.log('Awaiting connection... please load placeholder.lua');
+    console.log('Awaiting connection... please load a .lua file in Bizhawk');
 });
 
 /*
