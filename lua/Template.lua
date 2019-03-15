@@ -115,7 +115,7 @@ while true do
 	-- Display messages if any
 	if textTime > 0 then
 		textTime = textTime - 1;
-		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, text, nil, nil, (client.bufferwidth()*client.bufferheight())/50000, nil, nil, 'center', 'middle');
+		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, "test", nil, nil, 12*(client.bufferwidth()/400), nil, nil, 'center', 'middle');
 	end
 
 	-- Next frame

@@ -12,16 +12,24 @@ time = 0
 odd = false;
 cannonTime = 0;
 cannonCam = false; 
+name = "";
 
 -- This function fires once for every command received
 function main(commandId, username)
+	if username == nil then
+		username = "unknown";
+	end
+	value = 10;
 	console.writeline("Button " .. commandId .. " pressed by " .. username);
-	if commandId == "1" then
+	name = username;
+	if commandId == 1 or commandId == '1' then
 		--Turn to Mario
 		mario();
 		reload();
+		console.writeline('1');
+		sendNotReady('A');
 		display("Mario");
-	elseif command == "2" then
+	elseif commandId == '2' then
 		--Turn to Luigi
 		mario();
 		memory.write_s16_be(0x2535C2, 0x3F89);
@@ -31,8 +39,9 @@ function main(commandId, username)
 		reload();
 		jump = 1.015;
 		gravity = .95;
+		console.writeline('2')
 		display("Luigi");
-	elseif command == "3" then
+	elseif commandId == "3" then
 		--Turn to Wario
 		mario();
 		memory.write_s16_be(0x2535BE, 0x4000);
@@ -46,7 +55,8 @@ function main(commandId, username)
 		jump = .985;
 		gravity = 1.1;
 		display("Wario")
-	elseif command == "4" then
+		console.writeline('3');
+	elseif commandId == "4" then
 		--Turn to Waluigi
 		mario();
 		memory.write_s16_be(0x2535C2, 0x4000);
@@ -61,7 +71,7 @@ function main(commandId, username)
 		reload();
 		waluigi = true;
 		display("Waluigi")
-	elseif command == "5" then
+	elseif commandId == "5" then
 		--Turn to Sonic
 		mario();
 		memory.write_s16_be(0x7EC40, 0x0);
@@ -78,7 +88,7 @@ function main(commandId, username)
 		maxSpeed = 0x44A0;
 		
 		display("Sonic")
-	elseif command == "6" then
+	elseif commandId == "6" then
 		--Turn to neon
 		mario();
 		memory.write_s16_be(0x7EC40, 0xA5);
@@ -97,7 +107,7 @@ function main(commandId, username)
 		acceleration = math.random(1,0x5000);
 		maxSpeed = math.random(1,0x5000);
 		display("Neon")
-	elseif command == "7" then
+	elseif commandId == "7" then
 		--Toggle vanish cap
 		if memory.read_s16_be(0x33B176) == 0x12 then
 			memory.write_s16_be(0x33B176, 0x10);
@@ -105,7 +115,7 @@ function main(commandId, username)
 			memory.write_s16_be(0x33B176, 0x12);
 		end
 		display("vanish")
-	elseif command == "8" then
+	elseif commandId == "8" then
 		--Toggle metal cap
 		if memory.read_s16_be(0x33B176) == 0x15 then
 			memory.write_s16_be(0x33B176, 0x10);
@@ -113,7 +123,7 @@ function main(commandId, username)
 			memory.write_s16_be(0x33B176, 0x15);
 		end
 		display("metal")
-	elseif command == "9" then
+	elseif commandId == "9" then
 		--Toggle wing  cap
 		if memory.read_s16_be(0x33B176) == 0x18 then
 			memory.write_s16_be(0x33B176, 0x10);
@@ -121,37 +131,37 @@ function main(commandId, username)
 			memory.write_s16_be(0x33B176, 0x18);
 		end
 		display("wing")
-	elseif command == "10" then
+	elseif commandId == "10" then
 		--Toggle random cap
 		local cap = math.random(1, 142);
 		memory.write_s16_be(0x33B176, cap);
 		display("random cap")
-	elseif command == "11" then
+	elseif commandId == "11" then
 		--Take X amount of health
 		memory.writebyte(0x33B21E, memory.readbyte(0x33B21E) - value);
 		print("oof")
 		text = username .. " took " .. value .. " health"
 		textTime = 500
-	elseif command == "12" then
+	elseif commandId == "12" then
 		--Add speed
 		memory.write_s32_be(0x33B17C, 0x4000440);
 		memory.writefloat(0x33B1C4, memory.readfloat(0x33B1C4, true) + (value*10), true)
 		text = username .. " added " .. value .. " positive speed"
 		textTime = 500
-	elseif command == "13" then
+	elseif commandId == "13" then
 		--Remove speed
 		memory.write_s32_be(0x33B17C, 0x4000440);
 		memory.writefloat(0x33B1C4, memory.readfloat(0x33B1C4, true) - (value*10), true)
 		text = username .. " added " .. value .. " negative speed"
 		textTime = 500
-	elseif command == "14" then
+	elseif commandId == "14" then
 		--Teleport upwards
 		memory.write_s32_be(0x33B17C, 0x3000880);
 		memory.writefloat(0x33B1B0, memory.readfloat(0x33B1B0, true) + (value*50) + 20, true)
 		print("upwards")
 		text = username .. " upwards " .. value
 		textTime = 500
-	elseif command == "15" then
+	elseif commandId == "15" then
 		--Cannon for X seconds
 		if cannonTime < 0 then
 			cannonTime = 0
@@ -259,7 +269,7 @@ mario();
 reload();
 
 function display(str)
-	text = username .. " used " .. str;
+	text = name .. " used " .. str;
 	textTime = 500
 end
 
@@ -283,8 +293,15 @@ comm.socketServerSend("Wake up!");
 comm.socketServerResponse();
 
 -- Tell broadcaster client to start accepting commands from extension
-function sendReady()
-	comm.socketServerSend('luaReady');
+function sendReady(groupId)
+	if groupId == nil then
+		groupId = '';
+	end
+	comm.socketServerSend('luaReady' .. groupId);
+end
+
+function sendNotReady(groupId)
+	comm.socketServerSend('luaNotReady' .. groupId);
 end
 
 function splitString(str)
@@ -308,6 +325,7 @@ sendReady();
 -- Main loop
 while true do
 	if frame > 10 then
+		sendReady();
 		command = splitString(comm.socketServerResponse());
 		frame = 0;
 	end
@@ -320,6 +338,7 @@ while true do
 		else
 			for i = 1, #command do
 				
+				console.writeline("command: " .. command[i]);
 				local payload = splitCommand(command[i]);
 				
 				local commandId = payload[1];
@@ -337,8 +356,12 @@ while true do
 	-- Display messages if any
 	if textTime > 0 then
 		textTime = textTime - 1;
-		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, text, nil, nil, (client.bufferwidth()*client.bufferheight())/50000, nil, nil, 'center', 'middle');
+		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, text, nil, nil, 12*(client.bufferwidth()/400), nil, nil, 'center', 'middle');
 	end
+	
+	updateCannonCam();
+	updatePhysics();
+	updateWaluigi();
 
 	-- Next frame
 	emu.frameadvance();

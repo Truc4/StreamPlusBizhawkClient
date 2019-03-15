@@ -10,10 +10,13 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 const luaChannel = config.channel;
 const luaToken = config.token;
 
-/*setInterval(function () {
-    socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken});
-    console.log('sending ready...');
-}, 2000)*/
+
+setInterval(function () {
+    if (bizHawk){
+        bizHawk.write('ping\rping\n');
+    }
+    socket.emit('ping');
+}, 10000)
 
 // Data from server
 
@@ -47,10 +50,18 @@ const zServer = net.createServer(function (zSocket) {
     zSocket.setEncoding('ascii');
     zSocket.on('data', function (data) {
         //console.log(data);
-        if (data == 'luaReady'){
+        if (data.startsWith('luaReady')){
+            data = data.slice(8);
+            console.log(data);
             luaBusy = false;
-            socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken});
+            bizHawk = zSocket;
+            socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
             console.log('sending ready...');
+        }
+        if (data.startsWith('luaNotReady')){
+            data = data.slice(11);
+            bizHawk = zSocket;
+            socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
         }
         //zSocket.write("test");
     });
