@@ -325,7 +325,7 @@ sendReady();
 -- Main loop
 while true do
 	if frame > 10 then
-		sendReady();
+		--sendReady();
 		command = splitString(comm.socketServerResponse());
 		frame = 0;
 	end
