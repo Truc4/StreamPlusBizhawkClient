@@ -2,13 +2,13 @@
 
 memory.usememorydomain("RDRAM"); -- set this to "RDRAM" for N64 games
 
--- Initialize variables -- Do use these variable names:
+-- Initialize variables -- Do not use these variable names:
 --frame
 --command
 --text
 --textTime
 count = 0;
-time = 0
+marioTime = 0
 odd = false;
 cannonTime = 0;
 cannonCam = false; 
@@ -28,6 +28,7 @@ function main(commandId, username)
 		reload();
 		console.writeline('1');
 		sendNotReady('A');
+		marioTime = 1000;
 		display("Mario");
 	elseif commandId == '2' then
 		--Turn to Luigi
@@ -109,6 +110,7 @@ function main(commandId, username)
 		display("Neon")
 	elseif commandId == "7" then
 		--Toggle vanish cap
+		sendReady('A');
 		if memory.read_s16_be(0x33B176) == 0x12 then
 			memory.write_s16_be(0x33B176, 0x10);
 		else
@@ -173,6 +175,22 @@ function main(commandId, username)
 	end
 end
 
+-- This function runs every frame
+function process()
+	--Stuff
+	updateCannonCam();
+	updatePhysics();
+	updateWaluigi();
+	
+	if marioTime >= 0 then
+		marioTime = marioTime - 1;
+	end
+	if marioTime == 0 then
+		sendReady('A');
+		console.writeline('mario available');
+	end
+end
+
 --Sets all values of Mario to default
 function mario()
 	memory.write_s16_be(0x2535CA, 0x3F80);
@@ -194,7 +212,7 @@ function mario()
 	waluigi = false;
 end
 
---Saves and loads a save state to update render
+-- Saves and loads a save state to update render
 function reload()
 	local save = memorysavestate.savecorestate();
 	memorysavestate.loadcorestate(save);
@@ -359,9 +377,7 @@ while true do
 		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, text, nil, nil, 12*(client.bufferwidth()/400), nil, nil, 'center', 'middle');
 	end
 	
-	updateCannonCam();
-	updatePhysics();
-	updateWaluigi();
+	process();
 
 	-- Next frame
 	emu.frameadvance();
