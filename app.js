@@ -56,7 +56,7 @@ const zServer = net.createServer(function (zSocket) {
             luaBusy = false;
             bizHawk = zSocket;
             socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
-            console.log('sending ready...');
+            //console.log('sending ready...');
         }
         if (data.startsWith('luaNotReady')){
             data = data.slice(11);

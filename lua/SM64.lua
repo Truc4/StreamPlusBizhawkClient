@@ -184,6 +184,7 @@ function process()
 	
 	if marioTime >= 0 then
 		marioTime = marioTime - 1;
+		gui.drawText(0,0, "Character cooldown: " .. math.ceil(marioTime), nil, nil, 12*(client.bufferwidth()/400));
 	end
 	if marioTime == 0 then
 		sendReady('A');
@@ -223,7 +224,7 @@ function updateCannonCam()
 	if cannonCam == true and cannonTime > 0 then
 		cannonTime = cannonTime - (1/60)
 		memory.writebyte(0x33C6D4, 0xA);
-		gui.drawText(0,0, "Cannon time remaining: " .. math.ceil(cannonTime), nil, nil, 25);
+		gui.drawText(0,0, "Cannon time remaining: " .. math.ceil(cannonTime), nil, nil, 12*(client.bufferwidth()/400));
 	elseif cannonCam == true and memory.readbyte(0x33C6D4) == 0xA then
 		memory.writebyte(0x33C6D4, 0x10);
 	else
@@ -343,7 +344,7 @@ sendReady();
 -- Main loop
 while true do
 	if frame > 10 then
-		--sendReady();
+		sendReady();
 		command = splitString(comm.socketServerResponse());
 		frame = 0;
 	end
