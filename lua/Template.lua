@@ -27,10 +27,9 @@ function main(commandId, username)
 	end
 end
 
--- Displays message in emulator
-function display(str, displayTime)
-	text = str;
-	textTime = displayTime
+-- This function runs once inbetween every frame of the emulator
+function process()
+	--count time, update physics, etc...
 end
 
 
@@ -61,8 +60,15 @@ comm.socketServerSend("Wake up!");
 comm.socketServerResponse();
 
 -- Tell broadcaster client to start accepting commands from extension
-function sendReady()
-	comm.socketServerSend('luaReady');
+function sendReady(groupId)
+	if groupId == nil then
+		groupId = '';
+	end
+	comm.socketServerSend('luaReady' .. groupId);
+end
+
+function sendNotReady(groupId)
+	comm.socketServerSend('luaNotReady' .. groupId);
 end
 
 function splitString(str)
@@ -81,11 +87,18 @@ function splitCommand(str)
 	return lines;
 end
 
+-- Displays message in emulator
+function display(str, displayTime)
+	text = str;
+	textTime = displayTime
+end
+
 sendReady();
 
 -- Main loop
 while true do
 	if frame > 10 then
+		sendReady();
 		command = splitString(comm.socketServerResponse());
 		frame = 0;
 	end
@@ -115,8 +128,10 @@ while true do
 	-- Display messages if any
 	if textTime > 0 then
 		textTime = textTime - 1;
-		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, "test", nil, nil, 12*(client.bufferwidth()/400), nil, nil, 'center', 'middle');
+		gui.drawText(client.bufferwidth()/2, client.bufferheight()/4, text, nil, nil, 12*(client.bufferwidth()/400), nil, nil, 'center', 'middle');
 	end
+	
+	process();
 
 	-- Next frame
 	emu.frameadvance();
