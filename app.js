@@ -12,7 +12,7 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 
 const serverOptions = {
     host: '0.0.0.0',
-    port: config.port || 8081,
+    port: config.port || 8080,
     routes: {
         cors: {
             origin: ['*'],
