@@ -33,6 +33,8 @@ const server = new Hapi.Server(serverOptions);
   
     // Start the server.
     await server.start();
+
+    console.log('Server running at %s', server.info.uri);
   
 })();
 
