@@ -80,15 +80,6 @@ zServer.listen(8081, '0.0.0.0', function(){
     console.log('Awaiting connection... please load a .lua file in Bizhawk');
 });
 
-/*
-setInterval(function(){
-    if (bizHawk){
-        bizHawk.write('test\n');
-        bizHawk.write('second msg\n');
-        console.log('sending test2');
-    }
-}, 2000);*/
-
 // Save transaction data
 function saveTransaction(transactionObject){
     fs.readFile('transactions.json', function (err, data) {
