@@ -23,6 +23,14 @@ const server = new Hapi.Server(serverOptions);
 
 (async () => {
     // Info from server
+
+    server.route({
+        method: 'GET',
+        path: '/',
+        handler: function(){
+            return true;
+        }
+    });
   
     server.route({
       method: 'GET',
@@ -33,14 +41,18 @@ const server = new Hapi.Server(serverOptions);
     // Start the server.
     await server.start();
 
-    //fetch('https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/dev/readyClient', {headers:{}})
+    fetch('https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/dev/readyClient', {headers:{ready:true,channelId:config.channelId, channelToken:config.channelToken}})
+        .then(res => res.json())
+        .then(body => {
+            console.log(body);
+        });
 
     console.log('Server running at %s', server.info.uri);
   
 })();
 
 function info(res){
-    console.log('Received request');
+    console.log('Received ' + res.headers.buttonid + ' from ' + res.headers.sender);
     return true;
 }
 
