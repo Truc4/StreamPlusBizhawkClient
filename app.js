@@ -1,8 +1,7 @@
 const fs = require('fs');
-//const io = require('socket.io-client');
 const net = require('net');
-
 const Hapi = require('hapi');
+const fetch = require('node-fetch');
 
 //var socket = io.connect("https://streamplusbizhawk-ebs.herokuapp.com");
 //var socket = io.connect("http://localhost:8082");
@@ -12,7 +11,7 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 
 const serverOptions = {
     host: '0.0.0.0',
-    port: config.port || 8080,
+    port: config.port || 8082,
     routes: {
         cors: {
             origin: ['*'],
@@ -34,12 +33,15 @@ const server = new Hapi.Server(serverOptions);
     // Start the server.
     await server.start();
 
+    //fetch('https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/dev/readyClient', {headers:{}})
+
     console.log('Server running at %s', server.info.uri);
   
 })();
 
 function info(res){
-    console.log(res);
+    console.log('Received request');
+    return true;
 }
 
 /*
@@ -89,13 +91,15 @@ const zServer = net.createServer(function (zSocket) {
             //console.log(data);
             luaBusy = false;
             bizHawk = zSocket;
-            socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
+            //socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
             //console.log('sending ready...');
+            // SEND READY TO SERVER
         }
         if (data.startsWith('luaNotReady')){
             data = data.slice(11);
             bizHawk = zSocket;
-            socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
+            //socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
+            // SEND NOTREADY TO SERVER
         }
         //zSocket.write("test");
     });
