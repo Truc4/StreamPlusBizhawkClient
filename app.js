@@ -8,6 +8,7 @@ const fetch = require('node-fetch');
 
 
 const config = JSON.parse(fs.readFileSync("config.json"));
+const ip = 'https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/dev';
 
 const serverOptions = {
     host: '0.0.0.0',
@@ -18,6 +19,8 @@ const serverOptions = {
         },
     },  
 };
+
+// defaultHeaders = channelId:config.channelId, channelToken:config.channelToken, port:serverOptions.port
 
 const server = new Hapi.Server(serverOptions);
 
@@ -41,10 +44,12 @@ const server = new Hapi.Server(serverOptions);
     // Start the server.
     await server.start();
 
-    fetch('https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/dev/readyClient', {headers:{ready:true,channelId:config.channelId, channelToken:config.channelToken}})
+    fetch(ip + '/readyClient', {headers:{ ready:false, groups:'{}', channelId:config.channelId, channelToken:config.channelToken, port:serverOptions.port}})
         .then(res => res.json())
         .then(body => {
             console.log(body);
+        }).catch(err =>{
+            console.log(err);
         });
 
     console.log('Server running at %s', server.info.uri);
