@@ -319,6 +319,11 @@ function sendReady(groupId)
 	comm.socketServerSend('luaReady' .. groupId);
 end
 
+-- Ping to keep connection to the client alive
+function ping()
+	comm.socketServerSend('ping');
+end
+
 function sendNotReady(groupId)
 	comm.socketServerSend('luaNotReady' .. groupId);
 end
@@ -344,7 +349,7 @@ sendReady();
 -- Main loop
 while true do
 	if frame > 10 then
-		sendReady();
+		ping();
 		command = splitString(comm.socketServerResponse());
 		frame = 0;
 	end

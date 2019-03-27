@@ -20,6 +20,8 @@ const serverOptions = {
     },  
 };
 
+var groups = {};
+
 // defaultHeaders = channelId:config.channelId, channelToken:config.channelToken, port:serverOptions.port
 
 const server = new Hapi.Server(serverOptions);
@@ -44,13 +46,7 @@ const server = new Hapi.Server(serverOptions);
     // Start the server.
     await server.start();
 
-    fetch(ip + '/readyClient', {headers:{ ready:false, groups:'{}', channelId:config.channelId, channelToken:config.channelToken, port:serverOptions.port}})
-        .then(res => res.json())
-        .then(body => {
-            console.log(body);
-        }).catch(err =>{
-            console.log(err);
-        });
+    sendReady(false, '{}');
 
     console.log('Server running at %s', server.info.uri);
   
@@ -59,6 +55,16 @@ const server = new Hapi.Server(serverOptions);
 function info(res){
     console.log('Received ' + res.headers.buttonid + ' from ' + res.headers.sender);
     return true;
+}
+
+function sendReady(ready, groups){
+    fetch(ip + '/readyClient', {headers:{ ready:ready, groups:groups, channelId:config.channelId, channelToken:config.channelToken, port:serverOptions.port}})
+        .then(res => res.json())
+        .then(body => {
+            console.log(body);
+        }).catch(err =>{
+            console.log(err);
+        });
 }
 
 /*
@@ -110,13 +116,20 @@ const zServer = net.createServer(function (zSocket) {
             bizHawk = zSocket;
             //socket.emit('ready', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
             //console.log('sending ready...');
+            if (data) groups.data = true;
             // SEND READY TO SERVER
+            sendReady(true, JSON.stringify(groups));
         }
         if (data.startsWith('luaNotReady')){
             data = data.slice(11);
             bizHawk = zSocket;
             //socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken, groupId:data});
+            if (data) groups.data = false;
             // SEND NOTREADY TO SERVER
+            sendReady(false, JSON.stringify(groups));
+        }
+        if (data.startsWith('ping')){
+            bizhawk = zSocket;
         }
         //zSocket.write("test");
     });
@@ -124,7 +137,8 @@ const zServer = net.createServer(function (zSocket) {
         zSocket.destroy();
         console.log("BizHawk disconnected");
         bizHawk = false;
-        socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken});
+        //socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken});
+        sendReady(false, JSON.stringify(groups));
         console.log('sending notReady...');
     });
     zSocket.on('end', zSocket.end);
