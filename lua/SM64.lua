@@ -362,7 +362,7 @@ while true do
 		else
 			for i = 1, #command do
 				
-				console.writeline("command: " .. command[i]);
+				--console.writeline("command: " .. command[i]);
 				local payload = splitCommand(command[i]);
 				
 				local commandId = payload[1];
