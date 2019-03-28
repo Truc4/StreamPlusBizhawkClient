@@ -56,7 +56,7 @@ function info(res){
     console.log('Received ' + res.headers.buttonid + ' from ' + res.headers.sender);
     if (bizhawk){
         bizhawk.write(res.headers.buttonid + '\r' + res.headers.sender + '\n');
-        return true;
+        return {'success': 'Success', 'message': 'Success'};
     }
     else{
         throw 'bizhawk not connected';
