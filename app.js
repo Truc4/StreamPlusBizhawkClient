@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
 
 
 const config = JSON.parse(fs.readFileSync("config.json"));
-const ip = 'https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/dev';
+const ip = 'https://0vvb7ugcje.execute-api.us-west-1.amazonaws.com/prod';
 
 const serverOptions = {
     host: '0.0.0.0',
