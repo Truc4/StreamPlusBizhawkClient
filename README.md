@@ -19,12 +19,13 @@ Read below to properly set them up.
 
 ## StreamPlusBizhawk Client Application
 
+*For the client application to work the port must be port forwarded*
 For the client to connect to the server you will need to set up the config.json file
 
 ### Config
 
 In the config.json file you will see channel and token. The channel and token are listen on the extensions configuration page. 
-Copy and paste them into the proper spots in the config.json file
+Copy and paste them into the proper spots in the config.json file. You must also choose and portforward a port.
 
 ## Bizhawk
 
