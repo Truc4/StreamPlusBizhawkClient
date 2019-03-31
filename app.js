@@ -144,7 +144,8 @@ const zServer = net.createServer(function (zSocket) {
         console.log("BizHawk disconnected");
         bizHawk = false;
         //socket.emit('notReady', {luaChannel:luaChannel, luaToken:luaToken});
-        sendReady(false, JSON.stringify(groups));
+        groups = {};
+        sendReady(false, '{}');
         console.log('sending notReady...');
     });
     zSocket.on('end', zSocket.end);

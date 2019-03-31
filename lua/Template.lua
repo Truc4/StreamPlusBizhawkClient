@@ -3,10 +3,10 @@
 memory.usememorydomain("RDRAM"); -- set this to "RDRAM" for N64 games
 
 -- Initialize variables -- Do use these variable names:
---frame
---command
---text
---textTime 
+--frame --Do not use this variable
+--command --Do not use this variable
+--text --use this variable to change the text displayed
+--textTime --use this variable to set how long the text is displayed
 
 -- This function fires once for every command received
 function main(commandId, username)

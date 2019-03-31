@@ -8,27 +8,27 @@ memory.usememorydomain("RDRAM"); -- set this to "RDRAM" for N64 games
 --text
 --textTime
 count = 0;
-marioTime = 0
+groupATime = 0
 odd = false;
 cannonTime = 0;
 cannonCam = false; 
 name = "";
+buttonTime = 0;
+buttonTimeButton = "";
+waluigi = false;
 
 -- This function fires once for every command received
 function main(commandId, username)
 	if username == nil then
 		username = "unknown";
 	end
-	value = 10;
+	--value = 10;
 	console.writeline("Button " .. commandId .. " pressed by " .. username);
 	name = username;
 	if commandId == 1 or commandId == '1' then
 		--Turn to Mario
 		mario();
 		reload();
-		console.writeline('1');
-		sendNotReady('A');
-		marioTime = 1000;
 		display("Mario");
 	elseif commandId == '2' then
 		--Turn to Luigi
@@ -59,6 +59,8 @@ function main(commandId, username)
 		console.writeline('3');
 	elseif commandId == "4" then
 		--Turn to Waluigi
+		sendNotReady('A');
+		groupATime = 3600;
 		mario();
 		memory.write_s16_be(0x2535C2, 0x4000);
 		memory.write_s16_be(0x2535BE, 0x3F80);
@@ -91,6 +93,8 @@ function main(commandId, username)
 		display("Sonic")
 	elseif commandId == "6" then
 		--Turn to neon
+		sendNotReady('A');
+		groupATime = 3600;
 		mario();
 		memory.write_s16_be(0x7EC40, 0xA5);
 		memory.write_s16_be(0x7EC42, 0xBB00);
@@ -103,14 +107,14 @@ function main(commandId, username)
 		reload();
 		jump = ((math.random() - .5) / 4) + 1
 		gravity = ((math.random() - .5) / 4) + 1
-		print("Jump: " .. jump)
-		print("Gravity: " .. gravity)
+		--print("Jump: " .. jump)
+		--print("Gravity: " .. gravity)
 		acceleration = math.random(1,0x5000);
 		maxSpeed = math.random(1,0x5000);
 		display("Neon")
 	elseif commandId == "7" then
 		--Toggle vanish cap
-		sendReady('A');
+		--sendReady('A');
 		if memory.read_s16_be(0x33B176) == 0x12 then
 			memory.write_s16_be(0x33B176, 0x10);
 		else
@@ -140,55 +144,76 @@ function main(commandId, username)
 		display("random cap")
 	elseif commandId == "11" then
 		--Take X amount of health
-		memory.writebyte(0x33B21E, memory.readbyte(0x33B21E) - value);
-		print("oof")
-		text = username .. " took " .. value .. " health"
-		textTime = 500
+		memory.writebyte(0x33B21E, memory.readbyte(0x33B21E) - 1);
+		--print("oof")
+		display("oof")
 	elseif commandId == "12" then
 		--Add speed
 		memory.write_s32_be(0x33B17C, 0x4000440);
-		memory.writefloat(0x33B1C4, memory.readfloat(0x33B1C4, true) + (value*10), true)
-		text = username .. " added " .. value .. " positive speed"
-		textTime = 500
+		memory.writefloat(0x33B1C4, memory.readfloat(0x33B1C4, true) + (100), true)
+		display("speed+")
 	elseif commandId == "13" then
 		--Remove speed
 		memory.write_s32_be(0x33B17C, 0x4000440);
-		memory.writefloat(0x33B1C4, memory.readfloat(0x33B1C4, true) - (value*10), true)
-		text = username .. " added " .. value .. " negative speed"
-		textTime = 500
+		memory.writefloat(0x33B1C4, memory.readfloat(0x33B1C4, true) - (100), true)
+		display("speed-")
 	elseif commandId == "14" then
 		--Teleport upwards
 		memory.write_s32_be(0x33B17C, 0x3000880);
-		memory.writefloat(0x33B1B0, memory.readfloat(0x33B1B0, true) + (value*50) + 20, true)
-		print("upwards")
-		text = username .. " upwards " .. value
-		textTime = 500
+		memory.writefloat(0x33B1B0, memory.readfloat(0x33B1B0, true) + (500) + 20, true)
+		--print("upwards")
+		display("upwards")
 	elseif commandId == "15" then
 		--Cannon for X seconds
 		if cannonTime < 0 then
 			cannonTime = 0
 		end
 		cannonCam = true
-		cannonTime = cannonTime + value;
-		text = username .. " added " .. value .. " seconds to CannonCamTM"
+		cannonTime = cannonTime + 10;
+		text = username .. " added 10 seconds to CannonCamTM"
+		textTime = 200
+	elseif commandId == "16" then
+		--Press A
+		text = name .. " pressed A";
+		textTime = 200
+		press("P1 A");
+	elseif commandId == "17" then
+		--Press B
+		text = name .. " pressed B";
+		textTime = 200
+		press("P1 B");
+	elseif commandId == "18" then
+		--Press Z
+		text = name .. " pressed Z";
 		textTime = 500
+		press("P1 Z");
 	end
 end
 
 -- This function runs every frame
 function process()
 	--Stuff
+	if buttonTime >= 0 then
+		buttons = joypad.get();
+		buttons[buttonTimeButton] = true
+		joypad.set(buttons);
+		buttonTime = buttonTime - 1;
+	end
+	
 	updateCannonCam();
 	updatePhysics();
 	updateWaluigi();
 	
-	if marioTime >= 0 then
-		marioTime = marioTime - 1;
-		gui.drawText(0,0, "Character cooldown: " .. math.ceil(marioTime), nil, nil, 12*(client.bufferwidth()/400));
+	if groupATime >= 0 then
+		groupATime = groupATime - 1;
+		gui.drawText(0,10, "Character cooldown: " .. math.ceil(groupATime/60), nil, nil, 12*(client.bufferwidth()/400));
 	end
-	if marioTime == 0 then
+	if groupATime == 0 then
+		waluigi = false;
+		mario();
+		reload();
 		sendReady('A');
-		console.writeline('mario available');
+		console.writeline("Character's available");
 	end
 end
 
@@ -210,7 +235,7 @@ function mario()
 	maxSpeed = 0x4240;
 	jump = 1;
 	gravity = 1;
-	waluigi = false;
+	--waluigi = false;
 end
 
 -- Saves and loads a save state to update render
@@ -224,7 +249,7 @@ function updateCannonCam()
 	if cannonCam == true and cannonTime > 0 then
 		cannonTime = cannonTime - (1/60)
 		memory.writebyte(0x33C6D4, 0xA);
-		gui.drawText(0,0, "Cannon time remaining: " .. math.ceil(cannonTime), nil, nil, 12*(client.bufferwidth()/400));
+		gui.drawText(client.bufferwidth()/2,25, "Cannon time remaining: " .. math.ceil(cannonTime), nil, nil, 12*(client.bufferwidth()/400), nil, nil, 'center');
 	elseif cannonCam == true and memory.readbyte(0x33C6D4) == 0xA then
 		memory.writebyte(0x33C6D4, 0x10);
 	else
@@ -234,6 +259,7 @@ end
 
 -- Invert Waluigi's controls if enabled
 function updateWaluigi()
+	--console.writeline(waluigi);
 	if waluigi then
 		if odd then
 			odd = false
@@ -289,8 +315,20 @@ reload();
 
 function display(str)
 	text = name .. " used " .. str;
-	textTime = 500
+	textTime = 200
 end
+
+-- Presses a button
+function press(button)
+	buttons = joypad.get();
+	buttons[button] = true
+	joypad.set(buttons);
+	buttonTime = 10;
+	buttonTimeButton = button;
+end
+
+
+
 
 
 
